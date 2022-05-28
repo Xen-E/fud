@@ -65,14 +65,14 @@ This will scan all the regular files in this directory.
 
 You can use **--help** for more or continue reading...
 
-**--timeout=[NUMBER]**, Request timeout in seconds. default is 30sec.
-**--recursive=[TRUE,FALSE]**, Scans directories recursively. default is false.
-**--ipv6=[TRUE,FALSE]**, Enables IPv6 support instead of IPv4, keep in mind that IPv6 is slower than IPv4, default is false.
-**--followredirects=[TRUE,FALSE]**, If set true then it will follow any HTTP redirect during request. default is true.
-**--maxredirects=[NUMBER]**, Requires previous flag. Maximum number of redirects to follow, using "-1" means for infinity. default is -1.
-**--ansi=[TRUE,FALSE]**, Enables ANSI escape sequences, Useful for modern terminals and POSIX systems. default is auto which means false in windows and true in other systems.
-**--verbose=[TRUE,FALSE]**, Enables verbose mode which will print more details, It's good for debugging. default is false.
-**--proxy=[SCHEME://PROXY:PORT]**, Uses proxy during requests; Numerical IPv6 proxies must be written within brackets **[]**, as for protocols you can use: *http, https, socks4, socks4a, socks5, socks5h*. if no scheme/protocol is specified then **http://** will be used, and if no port is specified then **1080** will be used.
+* **--timeout=[NUMBER]**, Request timeout in seconds. default is 30sec.
+* **--recursive=[TRUE,FALSE]**, Scans directories recursively. default is false.
+* **--ipv6=[TRUE,FALSE]**, Enables IPv6 support instead of IPv4, keep in mind that IPv6 is slower than IPv4, default is false.
+* **--followredirects=[TRUE,FALSE]**, If set true then it will follow any HTTP redirect during request. default is true.
+* **--maxredirects=[NUMBER]**, Requires previous flag. Maximum number of redirects to follow, using "-1" means for infinity. default is -1.
+* **--ansi=[TRUE,FALSE]**, Enables ANSI escape sequences, Useful for modern terminals and POSIX systems. default is auto which means false in windows and true in other systems.
+* **--verbose=[TRUE,FALSE]**, Enables verbose mode which will print more details, It's good for debugging. default is false.
+* **--proxy=[SCHEME://PROXY:PORT]**, Uses proxy during requests; Numerical IPv6 proxies must be written within brackets **[]**, as for protocols you can use: *http, https, socks4, socks4a, socks5, socks5h*. if no scheme/protocol is specified then **http://** will be used, and if no port is specified then **1080** will be used.
 
 
 ## License
