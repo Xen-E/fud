@@ -30,7 +30,7 @@ const vector<DiagnosedFile> Checker::extractURLS()
 
             string line; long lineNum = 1;
             while (getline(reader, line)) {
-                regex self_regex("(http|ftp|https):\\/\\/([\\w_-]+(?:(?:\\.[\\w_-]+)+))([\\w.,@?^=%&:\\/~+#-]*[\\w@?^=%&\\/~+#-])",
+                regex self_regex("(http:\\/\\/|ftp:\\/\\/|https:\\/\\/|www\\.)([\\w_-]+(?:(?:\\.[\\w_-]+)+))([\\w.,@?^=%&:\\/~+#-]*[\\w@?^=%&\\/~+#-])?",
                 regex_constants::ECMAScript | regex_constants::icase);
                 smatch match;
                 if (regex_search(line, match, self_regex)) {
