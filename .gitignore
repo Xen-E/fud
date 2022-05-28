@@ -1,0 +1,8 @@
+build/
+bin/
+installer/
+.vscode/
+test/
+testfiles/
+todo.txt
+CMakeLists.txt.user
