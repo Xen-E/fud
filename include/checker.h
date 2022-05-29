@@ -35,6 +35,7 @@ extern bool   followRedirects;
 extern long   maxRedirects;
 extern bool   useProxy;
 extern string proxy;
+extern bool   duplicateCheck;
 extern bool   verbose;
 
 

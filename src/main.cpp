@@ -33,6 +33,7 @@ bool   followRedirects  = true;  //Follow HTTP redirects?
 long   maxRedirects     = -1;    //-1 = infinite | 0 = no redirects.
 bool   useProxy         = false; //Use proxy?
 string proxy;                    //http:// https:// socks4:// socks4a:// socks5:// socks5h://
+bool   duplicateCheck   = false; //If true then duplicate URLs will be checked
 bool   verbose          = false;
 
 /*
@@ -108,6 +109,7 @@ void displayHelp()
             "\t|                      |                     |       |                                    |\n"
             "\t| --ansi               | true, false         | auto  | Enables ANSI escape sequences      |\n"
             "\t| --verbose            |                     |       | Enables verbose mode               |\n"
+            "\t| --duplicatecheck     |                     |       | Check all URLs. even duplicates    |\n"
             "\t|                      |                     |       |                                    |\n"
             "\t| --proxy              | SCHEME://PROXY:PORT | NULL  | Use proxy to make requests, if no  |\n"
             "\t|                      | Schemes:            |       | port is provided then 1080 will be |\n"
@@ -324,6 +326,9 @@ int main(int argc, char *argv[])
             }
             else if (arg_str.find("--verbose") != string::npos) {
                 verbose = true;
+            }
+            else if (arg_str.find("--duplicatecheck") != string::npos) {
+                duplicateCheck = true;
             }
             else if (arg_str.find("--proxy=") != string::npos) {
                 const string arg_proxy(arg_str.substr(8));

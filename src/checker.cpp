@@ -18,6 +18,7 @@
 const vector<DiagnosedFile> Checker::extractURLS()
 {
     vector<DiagnosedFile> dFiles;
+    vector<string> existingLinks;
 
     for(const string &file: files) {
         if (verbose) cout << "Reading \"" << file << "\"...\n";
@@ -36,9 +37,15 @@ const vector<DiagnosedFile> Checker::extractURLS()
                 if (regex_search(line, match, self_regex)) {
                     if (verbose) cout << "\tURL detected: \"" << match[0] << "\", Line:" << lineNum << ", at:" << match.position()+1 << endl;
 
+                    if (std::find(existingLinks.begin(), existingLinks.end(), match[0]) != existingLinks.end()) {
+                        if (verbose) dye("\tDuplicate URL detected!\n", warn);
+                        if (!duplicateCheck) continue;
+                    }
+
                     currentFile.lineNums.push_back(lineNum);
                     currentFile.positions.push_back(match.position(0)+1);
                     currentFile.allLinks.push_back(match[0]);
+                    existingLinks.push_back(match[0]);
                 }
                 lineNum++;
             }
