@@ -91,7 +91,7 @@ void displayHelp()
             "\t|       Argument       |         Value       |Default|              Description           |\n"
             "\t =========================================================================================\n"
             "\t| --timeout            | Number              |  30   | Time in seconds before timeout     |\n"
-            "\t| --recursive          | true, false         | false | Scan directories recursively       |\n"
+            "\t| --recursive          |                     |       | Scan directories recursively       |\n"
             "\t| --ipv6               | true, false         | false | Enables IPv6 instead of IPv4       |\n"
             "\t| --followredirects    | true, false         | true  | Follow URL redirections?           |\n"
             "\t| --maxredirects       | Number              |  -1   | Redirections limit (-1 = infinite) |\n"
@@ -107,7 +107,7 @@ void displayHelp()
             "\t|                      | tftp,dict           |       |                                    |\n"
             "\t|                      |                     |       |                                    |\n"
             "\t| --ansi               | true, false         | auto  | Enables ANSI escape sequences      |\n"
-            "\t| --verbose            | true, false         | false | Enables verbose mode               |\n"
+            "\t| --verbose            |                     |       | Enables verbose mode               |\n"
             "\t|                      |                     |       |                                    |\n"
             "\t| --proxy              | SCHEME://PROXY:PORT | NULL  | Use proxy to make requests, if no  |\n"
             "\t|                      | Schemes:            |       | port is provided then 1080 will be |\n"
@@ -157,21 +157,8 @@ int main(int argc, char *argv[])
         for (int a = 1; a < argc; a++) {
             const string arg_str(argv[a]);
 
-            if (arg_str.find("--recursive=") != string::npos) {
-                string arg_r(arg_str.substr(12));
-                for (auto &c: arg_r) { c = tolower(c); }
-                try {
-                    if ((arg_r.length() == 4 && arg_r.find("true") != string::npos) ||
-                        (arg_r.length() == 5 && arg_r.find("false") != string::npos))
-                        recursiveSearch = arg_r == "true" ? true : false;
-                    else {
-                        dye("Unknown Recursive argument value." + arg_r + "\n", error);
-                        return -1;
-                    }
-                }
-                catch (invalid_argument const &ex) {
-                    dye("Recursive invalid argument: " + arg_str + "\n", error);
-                }
+            if (arg_str.find("--recursive") != string::npos) {
+                recursiveSearch = true;
             }
             else if (arg_str.find("--timeout=") != string::npos) {
                 try {
@@ -335,7 +322,7 @@ int main(int argc, char *argv[])
                     dye("ANSI invalid argument: " + arg_str + "\n", error);
                 }
             }
-            else if (arg_str.find("--verbose=") != string::npos) {
+            else if (arg_str.find("--verbose") != string::npos) {
                 verbose = true;
             }
             else if (arg_str.find("--proxy=") != string::npos) {
