@@ -25,6 +25,8 @@
 using namespace std;
 namespace fs = filesystem;
 
+//Global vars
+
 int    timeout          = 30;    //sec
 bool   ipv6             = false; //Forces IPv6
 bool   followRedirects  = true;  //Follow HTTP redirects?
@@ -33,9 +35,51 @@ bool   useProxy         = false; //Use proxy?
 string proxy;                    //http:// https:// socks4:// socks4a:// socks5:// socks5h://
 bool   verbose          = false;
 
+/*
+Used by checkURLs() in checker.cpp
+to enable or disable request redirects protocols
 
+By default libcurl will allow HTTP, HTTPS, FTP and FTPS on redirect (7.65.2).
+Older versions of libcurl allowed all protocols on redirect except several disabled
+for security reasons: Since 7.19.4 FILE and SCP are disabled,
+and since 7.40.0 SMB and SMBS are also disabled.
+CURLPROTO_ALL enables all protocols on redirect, including those disabled for security.
+*/
+bool CURL_REDIRECT_PROTOCOL_ALL    = true;
+bool CURL_REDIRECT_PROTOCOL_DICT   = false;
+bool CURL_REDIRECT_PROTOCOL_FILE   = false;
+bool CURL_REDIRECT_PROTOCOL_FTP    = false;
+bool CURL_REDIRECT_PROTOCOL_FTPS   = false;
+bool CURL_REDIRECT_PROTOCOL_GOPHER = false;
+bool CURL_REDIRECT_PROTOCOL_HTTP   = false;
+bool CURL_REDIRECT_PROTOCOL_HTTPS  = false;
+bool CURL_REDIRECT_PROTOCOL_IMAP   = false;
+bool CURL_REDIRECT_PROTOCOL_IMAPS  = false;
+bool CURL_REDIRECT_PROTOCOL_LDAP   = false;
+bool CURL_REDIRECT_PROTOCOL_LDAPS  = false;
+bool CURL_REDIRECT_PROTOCOL_POP3   = false;
+bool CURL_REDIRECT_PROTOCOL_POP3S  = false;
+bool CURL_REDIRECT_PROTOCOL_RTMP   = false;
+bool CURL_REDIRECT_PROTOCOL_RTMPE  = false;
+bool CURL_REDIRECT_PROTOCOL_RTMPS  = false;
+bool CURL_REDIRECT_PROTOCOL_RTMPT  = false;
+bool CURL_REDIRECT_PROTOCOL_RTMPTE = false;
+bool CURL_REDIRECT_PROTOCOL_RTMPTS = false;
+bool CURL_REDIRECT_PROTOCOL_RTSP   = false;
+bool CURL_REDIRECT_PROTOCOL_SCP    = false;
+bool CURL_REDIRECT_PROTOCOL_SFTP   = false;
+bool CURL_REDIRECT_PROTOCOL_SMB    = false;
+bool CURL_REDIRECT_PROTOCOL_SMBS   = false;
+bool CURL_REDIRECT_PROTOCOL_SMTP   = false;
+bool CURL_REDIRECT_PROTOCOL_SMTPS  = false;
+bool CURL_REDIRECT_PROTOCOL_TELNET = false;
+bool CURL_REDIRECT_PROTOCOL_TFTP   = false;
+
+
+//Non-Global vars
 bool recursiveSearch = false;
-bool ANSI = true;
+bool ANSI            = true;
+
 
 void displayHelp()
 {
@@ -43,29 +87,43 @@ void displayHelp()
         "\n\tCompiled using " + usedCompiler::name + " Version: " + usedCompiler::version +
         "\n\tWritten by " + Developer::name + "<" + Developer::email + ">\t" + Developer::domain + "\n\n", dim);
 
-    cout << "\t ======================================================================================\n"
-            "\t|      Argument     |         Value       |Default|              Description           |\n"
-            "\t ======================================================================================\n"
-            "\t| --timeout         | Number              |  30   | Time in seconds before timeout     |\n"
-            "\t| --recursive       | true, false         | false | Scan directories recursively       |\n"
-            "\t| --ipv6            | true, false         | false | Enables IPv6 instead of IPv4       |\n"
-            "\t| --followredirects | true, false         | true  | Follow URL redirections?           |\n"
-            "\t| --maxredirects    | Number              |  -1   | Redirections limit (-1 = infinite) |\n"
-            "\t| --ansi            | true, false         | auto  | Enables ANSI escape sequences      |\n"
-            "\t| --verbose         | true, false         | false | Enables verbose mode               |\n"
-            "\t| --proxy           | SCHEME://PROXY:PORT | NULL  | Use proxy to make requests, if no  |\n"
-            "\t|                   | Schemes:            |       | port is provided then 1080 will be |\n"
-            "\t|                   |   http:// (default) |       | used. and if no scheme is provided |\n"
-            "\t|                   |   https://          |       | http:// will be used. A numerical  |\n"
-            "\t|                   |   socks4://         |       | IPv6 must be written within:  [ ]  |\n"
-            "\t|                   |   socks4a://        |       | https://0.0.0.0:1234               |\n"
-            "\t|                   |   socks5://         |       | socks4://proxy.com:80              |\n"
-            "\t|                   |   socks5h://        |       | socks5h://[0:0:0:0:0:0:0:0]:8080   |\n"
-            "\t ======================================================================================\n\n";
+    cout << "\t =========================================================================================\n"
+            "\t|       Argument       |         Value       |Default|              Description           |\n"
+            "\t =========================================================================================\n"
+            "\t| --timeout            | Number              |  30   | Time in seconds before timeout     |\n"
+            "\t| --recursive          | true, false         | false | Scan directories recursively       |\n"
+            "\t| --ipv6               | true, false         | false | Enables IPv6 instead of IPv4       |\n"
+            "\t| --followredirects    | true, false         | true  | Follow URL redirections?           |\n"
+            "\t| --maxredirects       | Number              |  -1   | Redirections limit (-1 = infinite) |\n"
+            "\t|                      |                     |       |                                    |\n"
+            "\t| --redirectsprotocols | all,http,https,ftp, |  all  | Accepted protocols during request  |\n"
+            "\t|                      | file,gopher,imap,   |       | redirects following. If \"all\" is |\n"
+            "\t|                      | imaps,ldap,ldaps,   |       | provided then HTTP, HTTPS, FTP,    |\n"
+            "\t|                      | pop3,pop3s,rtmp,    |       | FTPS will be used. Otherwise enter |\n"
+            "\t|                      | rtmpe,rtmps,rtmpt,  |       | protocols and separate them using  |\n"
+            "\t|                      | rtmpte,rtmpts,rtsp, |       | comma (,) without spaces, Example: |\n"
+            "\t|                      | scp,sftp,smb,smbs,  |       | --redirectsprotocols=scp,http,smb  |\n"
+            "\t|                      | smtp,smtps,telnet,  |       |                                    |\n"
+            "\t|                      | tftp,dict           |       |                                    |\n"
+            "\t|                      |                     |       |                                    |\n"
+            "\t| --ansi               | true, false         | auto  | Enables ANSI escape sequences      |\n"
+            "\t| --verbose            | true, false         | false | Enables verbose mode               |\n"
+            "\t|                      |                     |       |                                    |\n"
+            "\t| --proxy              | SCHEME://PROXY:PORT | NULL  | Use proxy to make requests, if no  |\n"
+            "\t|                      | Schemes:            |       | port is provided then 1080 will be |\n"
+            "\t|                      |   http:// (default) |       | used. and if no scheme is provided |\n"
+            "\t|                      |   https://          |       | http:// will be used. A numerical  |\n"
+            "\t|                      |   socks4://         |       | IPv6 must be written within:  [ ]  |\n"
+            "\t|                      |   socks4a://        |       | https://0.0.0.0:1234               |\n"
+            "\t|                      |   socks5://         |       | socks4://proxy.com:80              |\n"
+            "\t|                      |   socks5h://        |       | socks5h://[0:0:0:0:0:0:0:0]:8080   |\n"
+            "\t =========================================================================================\n\n";
 
     dye("\t" + Libraries::libcurlVersion + "\n", dim);
 }
 
+//Takes a directory path and returns the number of
+//files in it, This used to show a warning if the folder is large.
 size_t number_of_files_in_directory(fs::path path, bool recursive)
 {
     using fp = bool (*)(const fs::path&);
@@ -160,7 +218,7 @@ int main(int argc, char *argv[])
                 try {
                     if ((arg_fr.length() == 4 && arg_fr.find("true") != string::npos) ||
                         (arg_fr.length() == 5 && arg_fr.find("false") != string::npos))
-                        followRedirects = arg_fr == "true" ? true : false;
+                        ipv6 = arg_fr == "true" ? true : false;
                     else {
                         dye("Unknown Follow Redirects argument value." + arg_fr + "\n", error);
                         return -1;
@@ -193,6 +251,74 @@ int main(int argc, char *argv[])
                     return -1;
                 }
             }
+            else if (arg_str.find("--redirectsprotocols=") != string::npos) {
+                string arg_rp(arg_str.substr(21));
+                for (auto &c: arg_rp) { c = tolower(c); }
+                try {
+                    //Split protocols by ',' char (comma) and load them in a vector
+                    vector<string> protocols;
+                    const char *str = arg_rp.c_str(); char c = ',';
+                    do {
+                        const char *begin = str;
+                        while (*str != c && *str) str++;
+
+                        protocols.push_back(string(begin, str));
+                    }
+                    while (0 != *str++);
+                    if (protocols.size() > 0) { //Making sure there's protocols
+                        for(const string &protocol: protocols) {
+
+                            //If "all" is provided as a value then break the loop and do something else
+                            //There's no reason to check the rest because they all should be enabled which "all" do.
+                            if (protocol.find("all") != string::npos) {
+                                CURL_REDIRECT_PROTOCOL_ALL = true; //Use all protocols
+                                break; //break the loop
+                            }
+                            else {
+                                CURL_REDIRECT_PROTOCOL_ALL = false; //"All" must be disabled in order to customize protocols
+                                if (protocol.find("http") != string::npos) CURL_REDIRECT_PROTOCOL_HTTP = true;
+                                if (protocol.find("https") != string::npos) CURL_REDIRECT_PROTOCOL_HTTPS = true;
+                                if (protocol.find("ftp") != string::npos) CURL_REDIRECT_PROTOCOL_FTP = true;
+                                if (protocol.find("ftps") != string::npos) CURL_REDIRECT_PROTOCOL_FTPS = true;
+                                if (protocol.find("file") != string::npos) CURL_REDIRECT_PROTOCOL_FILE = true;
+                                if (protocol.find("gopher") != string::npos) CURL_REDIRECT_PROTOCOL_GOPHER = true;
+                                if (protocol.find("imap") != string::npos) CURL_REDIRECT_PROTOCOL_IMAP = true;
+                                if (protocol.find("imaps") != string::npos) CURL_REDIRECT_PROTOCOL_IMAPS = true;
+                                if (protocol.find("ldap") != string::npos) CURL_REDIRECT_PROTOCOL_LDAP = true;
+                                if (protocol.find("ldaps") != string::npos) CURL_REDIRECT_PROTOCOL_LDAPS = true;
+                                if (protocol.find("pop3") != string::npos) CURL_REDIRECT_PROTOCOL_POP3 = true;
+                                if (protocol.find("pop3s") != string::npos) CURL_REDIRECT_PROTOCOL_POP3S = true;
+                                if (protocol.find("rtmp") != string::npos) CURL_REDIRECT_PROTOCOL_RTMP = true;
+                                if (protocol.find("rtmpe") != string::npos) CURL_REDIRECT_PROTOCOL_RTMPE = true;
+                                if (protocol.find("rtmps") != string::npos) CURL_REDIRECT_PROTOCOL_RTMPS = true;
+                                if (protocol.find("rtmpt") != string::npos) CURL_REDIRECT_PROTOCOL_RTMPT = true;
+                                if (protocol.find("rtmpte") != string::npos) CURL_REDIRECT_PROTOCOL_RTMPTE = true;
+                                if (protocol.find("rtmpts") != string::npos) CURL_REDIRECT_PROTOCOL_RTMPTS = true;
+                                if (protocol.find("rtsp") != string::npos) CURL_REDIRECT_PROTOCOL_RTSP = true;
+                                if (protocol.find("scp") != string::npos) CURL_REDIRECT_PROTOCOL_SCP = true;
+                                if (protocol.find("sftp") != string::npos) CURL_REDIRECT_PROTOCOL_SFTP = true;
+                                if (protocol.find("smb") != string::npos) CURL_REDIRECT_PROTOCOL_SMB = true;
+                                if (protocol.find("smbs") != string::npos) CURL_REDIRECT_PROTOCOL_SMBS = true;
+                                if (protocol.find("smtp") != string::npos) CURL_REDIRECT_PROTOCOL_SMTP = true;
+                                if (protocol.find("smtps") != string::npos) CURL_REDIRECT_PROTOCOL_SMTPS = true;
+                                if (protocol.find("telnet") != string::npos) CURL_REDIRECT_PROTOCOL_TELNET = true;
+                                if (protocol.find("tftp") != string::npos) CURL_REDIRECT_PROTOCOL_TFTP = true;
+                                if (protocol.find("dict") != string::npos) CURL_REDIRECT_PROTOCOL_DICT = true;
+                            }
+                        }
+                    }
+                    else {
+                        dye("No protocols detected in argument --redirectsprotocol: " + arg_rp + "\n", error);
+                        return -1;
+                    }
+                }
+                catch (invalid_argument const &ex) {
+                    dye("Redirects Protocols invalid argument: " + arg_str + "\n", error);
+                }
+                catch (exception const &ex) {
+                    dye("Redirects Protocols invalid argument: " + arg_str + "\n", error);
+                }
+            }
             else if (arg_str.find("--ansi=") != string::npos) {
                 string arg_ansi(arg_str.substr(7));
                 for (auto &c: arg_ansi) { c = tolower(c); }
@@ -206,24 +332,11 @@ int main(int argc, char *argv[])
                     }
                 }
                 catch (invalid_argument const &ex) {
-                    dye("Verbose invalid argument: " + arg_str + "\n", error);
+                    dye("ANSI invalid argument: " + arg_str + "\n", error);
                 }
             }
             else if (arg_str.find("--verbose=") != string::npos) {
-                string arg_vb(arg_str.substr(10));
-                for (auto &c: arg_vb) { c = tolower(c); }
-                try {
-                    if ((arg_vb.length() == 4 && arg_vb.find("true") != string::npos) ||
-                        (arg_vb.length() == 5 && arg_vb.find("false") != string::npos))
-                        verbose = arg_vb == "true" ? true : false;
-                    else {
-                        dye("Unknown Verbose argument value." + arg_vb + "\n", error);
-                        return -1;
-                    }
-                }
-                catch (invalid_argument const &ex) {
-                    dye("Verbose invalid argument: " + arg_str + "\n", error);
-                }
+                verbose = true;
             }
             else if (arg_str.find("--proxy=") != string::npos) {
                 const string arg_proxy(arg_str.substr(8));

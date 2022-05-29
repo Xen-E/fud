@@ -83,6 +83,41 @@ void Checker::checkURLs(const vector<DiagnosedFile> &diagnosedFiles)
         if (verbose) cout << "Maximum Redirects: " << maxRedirects << endl;
         curl_easy_setopt(curl, CURLOPT_MAXREDIRS, maxRedirects);
 
+        if (CURL_REDIRECT_PROTOCOL_ALL)
+            curl_easy_setopt(curl, CURLOPT_REDIR_PROTOCOLS, CURLPROTO_ALL);
+        else {
+            curl_easy_setopt(curl, CURLOPT_REDIR_PROTOCOLS, (CURL_REDIRECT_PROTOCOL_HTTP   ? CURLPROTO_HTTP   : 0) |
+                                                            (CURL_REDIRECT_PROTOCOL_HTTPS  ? CURLPROTO_HTTPS  : 0) |
+                                                            (CURL_REDIRECT_PROTOCOL_FTP    ? CURLPROTO_FTP    : 0) |
+                                                            (CURL_REDIRECT_PROTOCOL_FTPS   ? CURLPROTO_FTPS   : 0) |
+                                                            (CURL_REDIRECT_PROTOCOL_FILE   ? CURLPROTO_FILE   : 0) |
+                                                            (CURL_REDIRECT_PROTOCOL_GOPHER ? CURLPROTO_GOPHER : 0) |
+                                                            (CURL_REDIRECT_PROTOCOL_IMAP   ? CURLPROTO_IMAP   : 0) |
+                                                            (CURL_REDIRECT_PROTOCOL_IMAPS  ? CURLPROTO_IMAPS  : 0) |
+                                                            (CURL_REDIRECT_PROTOCOL_LDAP   ? CURLPROTO_LDAP   : 0) |
+                                                            (CURL_REDIRECT_PROTOCOL_LDAPS  ? CURLPROTO_LDAPS  : 0) |
+                                                            (CURL_REDIRECT_PROTOCOL_POP3   ? CURLPROTO_POP3   : 0) |
+                                                            (CURL_REDIRECT_PROTOCOL_POP3S  ? CURLPROTO_POP3S  : 0) |
+                                                            (CURL_REDIRECT_PROTOCOL_RTMP   ? CURLPROTO_RTMP   : 0) |
+                                                            (CURL_REDIRECT_PROTOCOL_RTMPE  ? CURLPROTO_RTMPE  : 0) |
+                                                            (CURL_REDIRECT_PROTOCOL_RTMPS  ? CURLPROTO_RTMPS  : 0) |
+                                                            (CURL_REDIRECT_PROTOCOL_RTMPT  ? CURLPROTO_RTMPT  : 0) |
+                                                            (CURL_REDIRECT_PROTOCOL_RTMPTE ? CURLPROTO_RTMPTE : 0) |
+                                                            (CURL_REDIRECT_PROTOCOL_RTMPTS ? CURLPROTO_RTMPTS : 0) |
+                                                            (CURL_REDIRECT_PROTOCOL_RTSP   ? CURLPROTO_RTSP   : 0) |
+                                                            (CURL_REDIRECT_PROTOCOL_SCP    ? CURLPROTO_SCP    : 0) |
+                                                            (CURL_REDIRECT_PROTOCOL_SFTP   ? CURLPROTO_SFTP   : 0) |
+                                                            (CURL_REDIRECT_PROTOCOL_SMB    ? CURLPROTO_SMB    : 0) |
+                                                            (CURL_REDIRECT_PROTOCOL_SMBS   ? CURLPROTO_SMBS   : 0) |
+                                                            (CURL_REDIRECT_PROTOCOL_SMTP   ? CURLPROTO_SMTP   : 0) |
+                                                            (CURL_REDIRECT_PROTOCOL_SMTPS  ? CURLPROTO_SMTPS  : 0) |
+                                                            (CURL_REDIRECT_PROTOCOL_TELNET ? CURLPROTO_TELNET : 0) |
+                                                            (CURL_REDIRECT_PROTOCOL_TFTP   ? CURLPROTO_TFTP   : 0) |
+                                                            (CURL_REDIRECT_PROTOCOL_DICT   ? CURLPROTO_DICT   : 0)
+                                                            );
+    }
+
+
         //IPv4 is much faster than IPv6 when it comes to DNS resolution time
         const string ipv6EnabledStr = ipv6 ? "YES" : "NO";
         if (verbose) cout << "IPv6 Enabled?: " << ipv6EnabledStr << endl;
