@@ -1,11 +1,13 @@
 ﻿# File URLs Doctor
 
-**FUD** is a very small executable that can be used to scan files/directories for dead links! It's cross-platform and highly customizable and can give you a detailed information.
+**FUD** is a very small executable that can be used to scan files/directories for dead links! It's cross-platform and highly customizable and can give you a lot of detailed information.
 
 * IPv6 support
-* Redirects following
+* Redirects following (28 Protocols!)
 * Proxy with IPv6 support (http, https, socks4, socks4a, socks5, socks5h)
 * Recursive scanning
+* URL Duplication detection
+* ANSI and Windows good ol' cmd.exe support
 
 This small tool is very useful if you have a an old blog/website and you want to check all links in it if it still working or need to be updated. It can be used for other tasks as well.
 
@@ -47,11 +49,11 @@ OR just download the [libcurl](https://curl.se/libcurl) library and use it. You 
 
 Call the executable name followed by files
 ```bash
-./fud file1.html file2.cpp file3.js...etc
+./fud file1.html "file2.cpp" file3.js...etc
 ```
 You can use directories/folders as well:
 ```bash
-./fud dir1 dir2 dir3...etc
+./fud dir1 "dir2" dir3...etc
 ```
 The **--recursive** flag can be useful when you deal with directories, So instead of:
 ```bash
@@ -59,19 +61,21 @@ The **--recursive** flag can be useful when you deal with directories, So instea
 ```
 Use:
 ```bash
-./fud dir1 --recursive=true
+./fud dir1 --recursive
 ```
-This will scan all the regular files in this directory.
+This will scan all the regular files in this directory recursively.
 
-You can use **--help** for more or continue reading...
+You can use **--help** for more info or continue reading...
 
 * **--timeout=[NUMBER]**, Request timeout in seconds. default is 30sec.
-* **--recursive=[TRUE,FALSE]**, Scans directories recursively. default is false.
+* **--recursive**, Scans directories recursively. Takes no value and by default is disabled.
 * **--ipv6=[TRUE,FALSE]**, Enables IPv6 support instead of IPv4, keep in mind that IPv6 is slower than IPv4, default is false.
 * **--followredirects=[TRUE,FALSE]**, If set true then it will follow any HTTP redirect during request. default is true.
 * **--maxredirects=[NUMBER]**, Requires previous flag. Maximum number of redirects to follow, using "-1" means for infinity. default is -1.
+* **--redirectsprotocols=[protocols]**, Which protocols will be accepted during URL request redirect following process. If you desire to use other protocols you can use these: *all,http,https,ftp,ftps,file,gopher,imap,imaps,ldap,ldaps,pop3,pop3s,rtmp,rtmpe,rtmps,rtmpt,rtmpte,rtmpts,rtsp,scp,sftp,smb,smbs,smtp,smtps,telnet,tftp,dict*. Remember to separate them using comma(**,**) and without spaces. If no protocols specified then "**all**" option will be used by default which will activate the following protocols: HTTP, HTTPS, FTP, FTPS.
 * **--ansi=[TRUE,FALSE]**, Enables ANSI escape sequences, Useful for modern terminals and POSIX systems. default is auto which means false in windows and true in other systems.
-* **--verbose=[TRUE,FALSE]**, Enables verbose mode which will print more details, It's good for debugging. default is false.
+* **--verbose**, Enables verbose mode which will print more details, It's good for debugging. Takes no value and by default is disabled.
+* **--duplicatecheck**, All URLs will be checked even the duplicates. Takes no value and by default is disabled.
 * **--proxy=[SCHEME://PROXY:PORT]**, Uses proxy during requests; Numerical IPv6 proxies must be written within brackets **[]**, as for protocols you can use: *http, https, socks4, socks4a, socks5, socks5h*. if no scheme/protocol is specified then **http://** will be used, and if no port is specified then **1080** will be used.
 
 
