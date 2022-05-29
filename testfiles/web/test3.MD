@@ -1,0 +1,1 @@
+This is a test [Markdown](https://en.wikipedia.org/wiki/Markdown) file, it's for [FUD](https://github.com/Xen-E/fud) project.
