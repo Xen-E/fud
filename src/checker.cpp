@@ -45,6 +45,7 @@ const vector<DiagnosedFile> Checker::extractURLS()
                     currentFile.lineNums.push_back(lineNum);
                     currentFile.positions.push_back(match.position(0)+1);
                     currentFile.allLinks.push_back(match[0]);
+
                     existingLinks.push_back(match[0]);
                 }
                 lineNum++;
@@ -152,7 +153,7 @@ void Checker::checkURLs(const vector<DiagnosedFile> &diagnosedFiles)
 
             for (const string &URL: dFile.allLinks) {
 
-                const int urlIndex = find(dFile.allLinks.begin(), dFile.allLinks.end(), URL) - dFile.allLinks.begin();
+                const int urlIndex = &URL-&dFile.allLinks[0];
 
                 cout << "\t" << (urlIndex+1) << "/" << dFile.allLinks.size() << " -> Working on URL: \"" << URL << "\"" << endl;
                 if (verbose) cout << "\t\tLine:" << dFile.lineNums.at(urlIndex) << ", at:" << dFile.positions.at(urlIndex) << endl;
