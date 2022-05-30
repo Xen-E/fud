@@ -66,14 +66,23 @@ This will scan all the regular files in this directory recursively.
 You can use **--help** for more info or continue reading...
 
 * **--timeout=[NUMBER]**, Request timeout in seconds. default is 30sec.
+
 * **--recursive**, Scans directories recursively. Takes no value and by default is disabled.
+
 * **--ipv6=[TRUE,FALSE]**, Enables IPv6 support instead of IPv4, keep in mind that IPv6 is slower than IPv4, default is false.
+
 * **--followredirects=[TRUE,FALSE]**, If set true then it will follow any HTTP redirect during request. default is true.
+
 * **--maxredirects=[NUMBER]**, Requires previous flag. Maximum number of redirects to follow, using "-1" means for infinity. default is -1.
+
 * **--redirectsprotocols=[protocols]**, Which protocols will be accepted during URL request redirect following process. If you desire to use other protocols you can use these: *all,http,https,ftp,ftps,file,gopher,imap,imaps,ldap,ldaps,pop3,pop3s,rtmp,rtmpe,rtmps,rtmpt,rtmpte,rtmpts,rtsp,scp,sftp,smb,smbs,smtp,smtps,telnet,tftp,dict*. Remember to separate them using comma(**,**) and without spaces. If no protocols specified then "**all**" option will be used by default which will activate the following protocols: HTTP, HTTPS, FTP, FTPS.
+
 * **--ansi=[TRUE,FALSE]**, Enables ANSI escape sequences, Useful for modern terminals and POSIX systems. default is auto which means false in windows and true in other systems.
+
 * **--verbose**, Enables verbose mode which will print more details, It's good for debugging. Takes no value and by default is disabled.
+
 * **--duplicatecheck**, All URLs will be checked even the duplicates. Takes no value and by default is disabled.
+
 * **--proxy=[SCHEME://PROXY:PORT]**, Uses proxy during requests; Numerical IPv6 proxies must be written within brackets **[]**, as for protocols you can use: *http, https, socks4, socks4a, socks5, socks5h*. if no scheme/protocol is specified then **http://** will be used, and if no port is specified then **1080** will be used.
 
 
