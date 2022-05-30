@@ -13,9 +13,7 @@ This small tool is very useful if you have a an old blog/website and you want to
 
 ## Installation
 
-~~If you're an average joe then just head over to [releases page](https://github.com/Xen-E/fud/releases) and download latest version for your platform. Otherwise continue reading;~~
-
-**SOON**
+If you're an average joe then just head over to [releases page](https://github.com/Xen-E/fud/releases) and download latest version for your platform. Otherwise continue reading;
 
 Nothing special, just make sure you have **libcurl** installed in your OS/toolchain:
 
